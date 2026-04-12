@@ -10,18 +10,7 @@ load_dotenv()
 client = Square(
     environment=SquareEnvironment.SANDBOX,
     token = os.environ['SQUARE_ACCESS_TOKEN'])
-    
-try:
-    response = client.locations.list()
-    for location in response.locations:
-        print(f"{location.id}: ", end ="")
-        print(f"{location.name}: ", end ="")
-        print(f"{location.address}: ", end ="")
-except ApiError as e:
-    for error in e.errors:
-        print(error.category)
-        print(error.code)
-        print(error.detail)
+
         
 
 # total number of balls of yarn sold
@@ -34,26 +23,24 @@ except ApiError as e:
 
 #update ticker counter
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, Response, jsonify
 
 app = Flask(__name__)
-
-@app.route('/webhook', methods=['POST']) #'/webhook' needs to be a URL that will then route here
-
-
-
+print("Flask started")
+@app.route('/', methods=['POST', 'GET']) #'/webhook' needs to be a URL that will then route here
 
 def handle_webhook():
     if request.method == 'POST':
         try:
-            payload = request.json
-            print(f"Received this payload: {payload}")
-            return jsonify({"message": "Webhook received successfully"}), 205
+            payload = request.form
+            print(f"Received this payload: {payload}", flush=True)
+            return 'success', 201
         except Exception as e:
             print(f"Error: {e}")
             return jsonify ({"error":"Failed to process webhook"}), 401
     else:
-        return jsonify({"message": "method now allowed"}), 406
+        os.abort()
         
 if __name__ == '__main__':
-    app.run(debug=True)
+    print("app started")
+    app.run(host='0.0.0.0', port=5000, debug=True)
