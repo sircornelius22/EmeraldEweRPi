@@ -69,6 +69,6 @@ def square_webhook():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True, ssl_context=('/etc/letsencrypt/live/eerpi.ddns.net/fullchain.pem','/etc/letsencrypt/live/eerpi.ddns.net/privkey.pem'))
     
 # figure out ssl certs for https requests 
