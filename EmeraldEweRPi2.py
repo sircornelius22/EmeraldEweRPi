@@ -22,7 +22,7 @@ def is_valid_signature(request):
         return False
 
     # Create the signed payload string
-    payload = SQUARE_WEBHOOK_NOTIFICATION_URL + request.data.decode("utf-8")
+    payload = os.getenv('SQUARE_WEBHOOK_NOTIFICATION_URL') + request.data.decode("utf-8")
 
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
@@ -69,6 +69,6 @@ def square_webhook():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80, debug=True, ssl_context=(CERT,KEY))
+    app.run(host='0.0.0.0', port=80, debug=True, ssl_context=(os.getenv('CERT'),os.getenv('KEY')))
     
 # figure out ssl certs for https requests 
