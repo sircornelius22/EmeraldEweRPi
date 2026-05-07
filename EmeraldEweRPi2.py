@@ -10,10 +10,9 @@ load_dotenv()
 app = Flask(__name__)
 
 # Set these as environment variables
-SQUARE_WEBHOOK_SIGNATURE_KEY = os.getenv("SQUARE_WEBHOOK_SIGNATURE_KEY")
-SQUARE_WEBHOOK_NOTIFICATION_URL = os.getenv("SQUARE_WEBHOOK_NOTIFICATION_URL")
-
-
+webhookKey = os.getenv("SQUARE_WEBHOOK_SIGNATURE_KEY")
+webhookURL = os.getenv("SQUARE_WEBHOOK_NOTIFICATION_URL")
+ 
 def is_valid_signature(request):
     """Verify Square webhook signature"""
     signature = request.headers.get("x-square-hmacsha256-signature")
@@ -22,12 +21,17 @@ def is_valid_signature(request):
         return False
 
     # Create the signed payload string
+<<<<<<< HEAD
     payload = SQUARE_WEBHOOK_NOTIFICATION_URL + request.data.decode("utf-8")
     print(payload)
+=======
+    payload = webhookURL + request.data.decode("utf-8")
+
+>>>>>>> ad3a96930c9054119815df9ffb259f180802596f
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
         hmac.new(
-            SQUARE_WEBHOOK_SIGNATURE_KEY.encode("utf-8"),
+            webhookKey.encode("utf-8"),
             payload.encode("utf-8"),
             hashlib.sha256
         ).digest()
