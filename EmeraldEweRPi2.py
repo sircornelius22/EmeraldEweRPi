@@ -10,66 +10,75 @@ load_dotenv()
 app = Flask(__name__)
 
 # Set these as environment variables
-webhookKey = os.getenv("SQUARE_WEBHOOK_SIGNATURE_KEY")
-webhookURL = os.getenv("SQUARE_WEBHOOK_NOTIFICATION_URL")
- 
+webhookKey = os.getenv('SQUARE_WEBHOOK_SIGNATURE_KEY')
+webhookURL = os.getenv('SQUARE_WEBHOOK_NOTIFICATION_URL')
+
+
+# Square's IP addresses. First 2 are production, 2nd 2 are Sandbox
+ALLOWED_IPS = ['54.245.1.154', '34.202.99.168', '54.212.177.79', '107.20.218.8']
+
 def is_valid_signature(request):
-    """Verify Square webhook signature"""
-    signature = request.headers.get("x-square-hmacsha256-signature")
+    '''Verify Square webhook signature'''
+    signature = request.headers.get('x-square-hmacsha256-signature')
 
     if not signature:
         return False
 
     # Create the signed payload string
 
-    payload = webhookURL + request.data.decode("utf-8")
+    payload = webhookURL + request.data.decode('utf-8')
     print(payload)
 
-    payload = webhookURL + request.data.decode("utf-8")
+    payload = webhookURL + request.data.decode('utf-8')
 
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
         hmac.new(
-            webhookKey.encode("utf-8"),
-            payload.encode("utf-8"),
+            webhookKey.encode('utf-8'),
+            payload.encode('utf-8'),
             hashlib.sha256
         ).digest()
-    ).decode("utf-8")
+    ).decode('utf-8')
 
     # Compare signatures securely
     return hmac.compare_digest(computed_signature, signature)
 
+@app.before_request
+def check_IP():
+    client_ip = request.remote_addr
+    if client_ip not in ALLOWED_IPS:
+        abort(403, description='Unrecognized IP')
 
-@app.route("/", methods=["POST"])
+@app.route('/', methods=['POST'])
 def square_webhook():
     # Verify signature
     if not is_valid_signature(request):
-        abort(403, description="Invalid signature")
+        abort(403, description='Invalid signature')
 
     event = request.json
     print(event, flush=True)
     if not event:
-        abort(400, description="Invalid payload")
+        abort(401, description='Invalid payload')
 
-    event_type = event.get("type")
-    event_id = event.get("event_id")
+    event_type = event.get('type')
+    event_id = event.get('event_id')
 
-    print(f"Received event: {event_type}", flush=True)
-    print(f"Event ID: {event_id}", flush=True)
-    print("Full payload:", event, flush=True)
+    print(f'Received event: {event_type}', flush=True)
+    print(f'Event ID: {event_id}', flush=True)
+    print('Full payload:', event, flush=True)
 
     # Handle specific event types
-    if event_type == "payment.created":
-        payment_data = event.get("data", {}).get("object", {})
-        print("Payment created:", payment_data, flush=True)
+    if event_type == 'payment.created':
+        payment_data = event.get('data', {}).get('object', {})
+        print('Payment created:', payment_data, flush=True)
 
-    elif event_type == "payment.updated":
-        payment_data = event.get("data", {}).get("object", {})
-        print("Payment updated:", payment_data, flush=True)
+    elif event_type == 'payment.updated':
+        payment_data = event.get('data', {}).get('object', {})
+        print('Payment updated:', payment_data, flush=True)
 
     # Always respond with 200 OK
-    return jsonify({"status": "success"}), 200
+    return jsonify({'status': 'success'}), 200
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80, debug=True, ssl_context=(os.getenv('CERT'),os.getenv('KEY')))
