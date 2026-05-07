@@ -23,7 +23,7 @@ def is_valid_signature(request):
 
     # Create the signed payload string
     payload = SQUARE_WEBHOOK_NOTIFICATION_URL + request.data.decode("utf-8")
-
+    print(payload)
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
         hmac.new(
