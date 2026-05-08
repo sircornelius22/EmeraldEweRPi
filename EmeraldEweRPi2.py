@@ -12,10 +12,6 @@ app = Flask(__name__)
 # Set these as environment variables
 webhookKey = os.getenv('SQUARE_WEBHOOK_SIGNATURE_KEY')
 webhookURL = os.getenv('SQUARE_WEBHOOK_SIGNATURE_URL')
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b0c2dc5039c05bfcd0a31105695240fa0becb9a
 
 # Square's IP addresses. First 2 are production, 2nd 2 are Sandbox
 ALLOWED_IPS = ['54.245.1.154', '34.202.99.168', '54.212.177.79', '107.20.218.8']
