@@ -18,7 +18,7 @@ webhookURL = os.getenv('SQUARE_WEBHOOK_NOTIFICATION_URL')
 ALLOWED_IPS = ['54.245.1.154', '34.202.99.168', '54.212.177.79', '107.20.218.8']
 
 def is_valid_signature(request):
-    '''Verify Square webhook signature'''
+    # Verify Square webhook signature
     signature = request.headers.get('x-square-hmacsha256-signature')
 
     if not signature:
@@ -28,8 +28,6 @@ def is_valid_signature(request):
 
     payload = webhookURL + request.data.decode('utf-8')
     print(payload)
-
-    payload = webhookURL + request.data.decode('utf-8')
 
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
@@ -65,7 +63,7 @@ def square_webhook():
 
     print(f'Received event: {event_type}', flush=True)
     print(f'Event ID: {event_id}', flush=True)
-    print('Full payload:', event, flush=True)
+    print(f'Full payload: {event}', event, flush=True)
 
     # Handle specific event types
     if event_type == 'payment.created':
@@ -81,4 +79,4 @@ def square_webhook():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=True, ssl_context=(os.getenv('CERT'),os.getenv('KEY')))
+    app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=(os.getenv('CERT'),os.getenv('KEY')))
