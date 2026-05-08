@@ -39,7 +39,7 @@ def is_valid_signature(request):
 
     # Compare signatures securely
     status = hmac.compare_digest(computed_signature, signature)
-    print(f'computed_signature is {computed_signature} \nvs \nsignature: {signature}')
+    print(f'computed_signature: {computed_signature} \nvs \nsignature: {signature}')
     return status
 
 @app.before_request
@@ -53,11 +53,13 @@ def check_IP():
 def square_webhook():
     # Verify signature
     if not is_valid_signature(request):
+        print(f'invalid signature')
         abort(403, description='Invalid signature')
 
     event = request.json
     print(event, flush=True)
     if not event:
+        print(f'invalid payload')
         abort(401, description='Invalid payload')
 
     event_type = event.get('type')
