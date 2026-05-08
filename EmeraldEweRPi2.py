@@ -39,7 +39,7 @@ def is_valid_signature(request):
 
     # Compare signatures securely
     status = hmac.compare_digest(computed_signature, signature)
-    print(status)
+    print(f'computed_signature is {computed_signature} \nvs \nsignature: {signature}')
     return status
 
 @app.before_request
