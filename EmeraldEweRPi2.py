@@ -12,6 +12,10 @@ app = Flask(__name__)
 # Set these as environment variables
 webhookKey = os.getenv('SQUARE_WEBHOOK_SIGNATURE_KEY')
 webhookURL = os.getenv('SQUARE_WEBHOOK_SIGNATURE_URL')
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b0c2dc5039c05bfcd0a31105695240fa0becb9a
 
 # Square's IP addresses. First 2 are production, 2nd 2 are Sandbox
 ALLOWED_IPS = ['54.245.1.154', '34.202.99.168', '54.212.177.79', '107.20.218.8']
@@ -26,8 +30,8 @@ def is_valid_signature(request):
     # Create the signed payload string
 
     payload = webhookURL + request.data.decode('utf-8')
-    print(payload)
-
+    print(f'received payload')
+    
     # Create HMAC SHA256 hash
     computed_signature = base64.b64encode(
         hmac.new(
@@ -38,11 +42,14 @@ def is_valid_signature(request):
     ).decode('utf-8')
 
     # Compare signatures securely
-    return hmac.compare_digest(computed_signature, signature)
+    status = hmac.compare_digest(computed_signature, signature)
+    print(status)
+    return status
 
 @app.before_request
 def check_IP():
     client_ip = request.remote_addr
+    print(f'received request from {client_ip}')
     if client_ip not in ALLOWED_IPS:
         abort(403, description='Unrecognized IP')
 
